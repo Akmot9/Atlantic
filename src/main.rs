@@ -23,43 +23,44 @@ fn main() {
         Ok(_) => panic!("Unhandled channel type"),
         Err(e) => panic!("An error occurred when creating the datalink channel: {}", e),
     };
-    println!("ok");
+    println!("Start reading packet: ");
 
     loop {
         match rx.next() {
             Ok(packet) => {
-                let ethernet_packet = EthernetPacket::new(packet).unwrap();
+                if let Some(ethernet_packet) = EthernetPacket::new(packet) {
 
-                match ethernet_packet.get_ethertype() {
-                    pnet::packet::ethernet::EtherTypes::Ipv6 => {
-                        if let Some(ipv6_packet) = Ipv6Packet::new(ethernet_packet.payload()) {
-                            println!("MAC Source: {}", ethernet_packet.get_source());
-                            println!("MAC Destination: {}", ethernet_packet.get_destination());
-                            //println!("Packet: {:?}", ethernet_packet.packet());
-                            //Sprintln!("Payload: {:?}", ethernet_packet.payload());
-                            println!("EtherType: {}", ethernet_packet.get_ethertype());
-                            println!("IPv6 Source: {}", ipv6_packet.get_source());
-                            println!("IPv6 Destination: {}", ipv6_packet.get_destination());
-                            // Add more IPv6 specific code here...
+                    match ethernet_packet.get_ethertype() {
+                        pnet::packet::ethernet::EtherTypes::Ipv6 => {
+                            if let Some(ipv6_packet) = Ipv6Packet::new(ethernet_packet.payload()) {
+                                println!("MAC Source: {}", ethernet_packet.get_source());
+                                println!("MAC Destination: {}", ethernet_packet.get_destination());
+                                //println!("Packet: {:?}", ethernet_packet.packet());
+                                //Sprintln!("Payload: {:?}", ethernet_packet.payload());
+                                println!("EtherType: {}", ethernet_packet.get_ethertype());
+                                println!("IPv6 Source: {}", ipv6_packet.get_source());
+                                println!("IPv6 Destination: {}", ipv6_packet.get_destination());
+                                // Add more IPv6 specific code here...
+                                println!("---");
+                            }
+                        }
+                        pnet::packet::ethernet::EtherTypes::Ipv4 => {
+                            if let Some(ipv4_packet) = Ipv4Packet::new(ethernet_packet.payload()) {
+                                println!("MAC Source: {}", ethernet_packet.get_source());
+                                println!("MAC Destination: {}", ethernet_packet.get_destination());
+                                //println!("Packet: {:?}", ethernet_packet.packet());
+                                //Sprintln!("Payload: {:?}", ethernet_packet.payload());
+                                println!("EtherType: {}", ethernet_packet.get_ethertype());
+                                println!("IPv4 Source: {}", ipv4_packet.get_source());
+                                println!("IPv4 Destination: {}", ipv4_packet.get_destination());
+                                // Add more IPv4 specific code here...
+                                println!("---");
+                            }
+                        }
+                        _ => {
+                            println!("Unknown EtherType");
                             println!("---");
                         }
-                    }
-                    pnet::packet::ethernet::EtherTypes::Ipv4 => {
-                        if let Some(ipv4_packet) = Ipv4Packet::new(ethernet_packet.payload()) {
-                            println!("MAC Source: {}", ethernet_packet.get_source());
-                            println!("MAC Destination: {}", ethernet_packet.get_destination());
-                            //println!("Packet: {:?}", ethernet_packet.packet());
-                            //Sprintln!("Payload: {:?}", ethernet_packet.payload());
-                            println!("EtherType: {}", ethernet_packet.get_ethertype());
-                            println!("IPv4 Source: {}", ipv4_packet.get_source());
-                            println!("IPv4 Destination: {}", ipv4_packet.get_destination());
-                            // Add more IPv4 specific code here...
-                            println!("---");
-                        }
-                    }
-                    _ => {
-                        println!("Unknown EtherType");
-                        println!("---");
                     }
                 }
             }
