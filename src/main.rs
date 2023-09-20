@@ -22,7 +22,26 @@ struct Relations {
     count: u64,
 }
 
+extern crate csv;
+
+use std::collections::HashSet;
+use std::fs::File;
+#[derive(Debug, Serialize, Hash, Eq, PartialEq, Clone)]
+struct PacketInfo {
+    ethertype: String,
+    source: String,
+    destination: String,
+    // ... add more fields as needed
+}
+
 fn main() {
+    let mut observed_packets = HashSet::new();  // To keep track of unique packets
+    let mut wtr = csv::Writer::from_writer(File::create("packets.csv").unwrap());
+
+    // Écrivez les en-têtes
+    wtr.write_record(&["EtherType", "IPv6 Source", "IPv6 Destination"]).unwrap();
+
+
     if let Some(interface_name) = choose_interface() {
         println!("L'interface choisie est: {}", &interface_name);
         let interface_names_match = |iface: &NetworkInterface| iface.name == interface_name;
@@ -51,6 +70,17 @@ fn main() {
 
                         pnet::packet::ethernet::EtherTypes::Ipv6 => {
                             if let Some(ipv6_packet) = Ipv6Packet::new(ethernet_packet.payload()) {
+                                let info = PacketInfo {
+                                    ethertype: format!("  EtherType: {}", ethernet_packet.get_ethertype()),
+                                    source: format!("  IPv6 Source: {}", ipv6_packet.get_source()),
+                                    destination: format!("  IPv6 Destination: {}", ipv6_packet.get_destination())
+                                };
+                                if !observed_packets.contains(&info) {
+                                    println!("New unique packet: {:?}", &info);
+                                    observed_packets.insert(info.clone());
+                                    wtr.serialize(info).unwrap();
+                                    wtr.flush().unwrap(); // Assurez-vous que les données sont écrites
+                                }
                                 println!("  EtherType: {}", ethernet_packet.get_ethertype());
                                 println!("  IPv6 Source: {}", ipv6_packet.get_source());
                                 println!("  IPv6 Destination: {}", ipv6_packet.get_destination());
@@ -99,6 +129,17 @@ fn main() {
 
                         pnet::packet::ethernet::EtherTypes::Ipv4 => {
                             if let Some(ipv4_packet) = Ipv4Packet::new(ethernet_packet.payload()) {
+                                let info = PacketInfo {
+                                    ethertype: format!("  EtherType: {}", ethernet_packet.get_ethertype()),
+                                    source: format!("  IPv4 Source: {}", ipv4_packet.get_source()),
+                                    destination: format!("  IPv4 Destination: {}", ipv4_packet.get_destination())
+                                };
+                                if !observed_packets.contains(&info) {
+                                    println!("New unique packet: {:?}###########################", &info);
+                                    observed_packets.insert(info.clone());
+                                    wtr.serialize(info).unwrap();
+                                    wtr.flush().unwrap(); // Assurez-vous que les données sont écrites
+                                }
                                 //println!("MAC Source: {}", ethernet_packet.get_source());
                                 //println!("MAC Destination: {}", ethernet_packet.get_destination());
                                 //println!("Packet: {:?}", ethernet_packet.packet());
