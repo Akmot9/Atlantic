@@ -33,15 +33,22 @@ jobs:
         profile: minimal
         toolchain: stable
 
-    - name: Add Packet.lib to MSVC library path
+    - name: Check if Visual Studio lib directory exists
       run: |
-        $libPath = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\lib\x64" # Update with your Visual Studio path
-        [System.Environment]::SetEnvironmentVariable("LIB", "$env:LIB;$libPath", [System.EnvironmentVariableTarget]::Machine)
+        $libDirectory = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\lib\x64"
+        if (Test-Path -Path $libDirectory -PathType Container) {
+          echo "Visual Studio lib directory exists."
+        } else {
+          echo "Visual Studio lib directory does not exist. Create it or adjust the path."
+          exit 1
+        }
+      shell: powershell
 
-    - name: Set PKG_CONFIG_PATH to include lib\ directory
+    - name: Copy Packet.lib to Visual Studio lib directory
       run: |
-        $libDirectory = "${{ github.workspace }}/lib" # Assuming packet.lib is in the lib\ directory of your repository
-        echo "PKG_CONFIG_PATH=$libDirectory" >> $GITHUB_ENV
+        $libDirectory = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\lib\x64" # Update with your Visual Studio path
+        Copy-Item -Path "${{ github.workspace }}/lib/Packet.lib" -Destination $libDirectory
+      shell: powershell
 
     - name: Build with Cargo
       run: |
