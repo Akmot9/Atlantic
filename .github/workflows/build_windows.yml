@@ -16,14 +16,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install Chocolatey
+    - name: Upgrade Chocolatey
       run: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+        choco upgrade chocolatey
       shell: powershell
 
     - name: Install Windows SDK
       run: |
-        choco install windows-sdk-10-version-number -y
+        choco install windows-sdk-10.0 -y
         # Replace 'version-number' with the appropriate Windows SDK version number
       shell: powershell
 
