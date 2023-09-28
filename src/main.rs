@@ -206,7 +206,6 @@ fn main() {
                                     println!("---");
                                 }
                             }
-
                             pnet::packet::ethernet::EtherTypes::Ipv4 => {
                                 if let Some(ipv4_packet) =
                                     Ipv4Packet::new(ethernet_packet.payload())
@@ -340,7 +339,6 @@ fn main() {
                                     println!("---");
                                 }
                             }
-
                             pnet::packet::ethernet::EtherTypes::Arp => {
                                 if let Some(arp_packet) = ArpPacket::new(ethernet_packet.payload())
                                 {
