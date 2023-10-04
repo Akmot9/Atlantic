@@ -9,3 +9,7 @@ edition = "2021"
 pnet = "0.34.0"
 csv = "1.2.2"
 serde = {version = "1.0.188", features = ["derive"]}
+rustcap = "0.1.2"
+
+[target.x86_64-pc-windows-msvc]
+linker = "lld-link"

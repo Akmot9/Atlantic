@@ -20,6 +20,8 @@ use std::collections::HashSet;
 use std::fs::File;
 #[derive(Debug, Serialize, Hash, Eq, PartialEq, Clone)]
 struct PacketInfo {
+    mac_source: String,
+    mac_destination: String,
     ethertype: String,
     ip_source: String,
     ip_destination: String,
@@ -93,6 +95,8 @@ fn main() {
                                                 source_port, destination_port
                                             );
                                             let info = PacketInfo {
+                                                mac_source: format!("{}", ethernet_packet.get_source()),
+                                                mac_destination: format!("{}", ethernet_packet.get_destination()),
                                                 ethertype: format!(
                                                     "{}",
                                                     ethernet_packet.get_ethertype()
@@ -131,6 +135,8 @@ fn main() {
                                             );
                                             println!("    checksum: {}", checksum);
                                             let info = PacketInfo {
+                                                mac_source: format!("{}", ethernet_packet.get_source()),
+                                                mac_destination: format!("{}", ethernet_packet.get_destination()),
                                                 ethertype: format!(
                                                     "{}",
                                                     ethernet_packet.get_ethertype()
@@ -164,6 +170,8 @@ fn main() {
                                                 source_port, destination_port
                                             );
                                             let info = PacketInfo {
+                                                mac_source: format!("{}", ethernet_packet.get_source()),
+                                                mac_destination: format!("{}", ethernet_packet.get_destination()),
                                                 ethertype: format!(
                                                     "{}",
                                                     ethernet_packet.get_ethertype()
@@ -240,6 +248,8 @@ fn main() {
                                                 source_port, destination_port
                                             );
                                             let info = PacketInfo {
+                                                mac_source: format!("{}", ethernet_packet.get_source()),
+                                                mac_destination: format!("{}", ethernet_packet.get_destination()),
                                                 ethertype: format!(
                                                     "{}",
                                                     ethernet_packet.get_ethertype()
@@ -273,6 +283,8 @@ fn main() {
                                                 source_port, destination_port
                                             );
                                             let info = PacketInfo {
+                                                mac_source: format!("{}", ethernet_packet.get_source()),
+                                                mac_destination: format!("{}", ethernet_packet.get_destination()),
                                                 ethertype: format!(
                                                     "{}",
                                                     ethernet_packet.get_ethertype()
@@ -306,6 +318,8 @@ fn main() {
                                                 source_port, destination_port
                                             );
                                             let info = PacketInfo {
+                                                mac_source: format!("{}", ethernet_packet.get_source()),
+                                                mac_destination: format!("{}", ethernet_packet.get_destination()),
                                                 ethertype: format!(
                                                     "{}",
                                                     ethernet_packet.get_ethertype()
@@ -361,9 +375,30 @@ fn main() {
                                         "  Sender_hw_addr: {}",
                                         arp_packet.get_sender_hw_addr()
                                     );
-
-                                    // Add more IPv4 specific code here...
                                     println!("---");
+                                    let info = PacketInfo {
+                                        mac_source: format!("{}", ethernet_packet.get_source()),
+                                        mac_destination: format!("{}", ethernet_packet.get_destination()),
+                                        ethertype: format!(
+                                            "{}",
+                                            ethernet_packet.get_ethertype()
+                                        ),
+                                        ip_source: format!(
+                                            "{}",
+                                            arp_packet.get_sender_hw_addr()
+                                        ),
+                                        ip_destination: format!(
+                                            "{}",
+                                            arp_packet.get_target_hw_addr()
+                                        ),
+                                        port_source: format!("N/A" ),
+                                        port_destination: format!("N/A"),
+                                        protocol: format!(
+                                            "{}",
+                                            arp_packet.get_protocol_type()
+                                        ),
+                                    };
+                                    process_packet(&mut observed_packets, &mut wtr, info);
                                     
                                 }
                             }
@@ -449,5 +484,8 @@ fn process_packet(
         observed_packets.insert(key);
         wtr.serialize(&info).unwrap();
         wtr.flush().unwrap();  // Assurez-vous que les données sont écrites
+    }
+    else {
+        //count +=1; 
     }
 }
