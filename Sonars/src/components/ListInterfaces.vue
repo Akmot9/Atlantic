@@ -1,8 +1,8 @@
 <template>
     <div>
       <h1>Interfaces disponibles</h1>
-      <div>
-        <button v-for="netInterface in netInterfaces" :key="netInterface" @click="handleClick(netInterface)">
+      <div class="button-container">
+        <button class="button" v-for="netInterface in netInterfaces" :key="netInterface" @click="handleClick(netInterface)">
           {{ netInterface }}
         </button>
       </div>
@@ -34,5 +34,14 @@
   </script>
   
   <style scoped>
+  .button-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  button {
+  text-align: left;  /* Align text to the left */
+  width: 100%;  /* Take up full width */
+}
   </style>
   
